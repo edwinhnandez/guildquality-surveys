@@ -6,7 +6,7 @@ A Laravel application for managing surveys and questions.
 
 1. Clone the repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/edwinhnandez/guildquality-surveys
 cd guildquality-surveys
 ```
 
