@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Question;
+use App\Models\Survey;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class QuestionBulkController extends Controller
 {
     /**
      * Assign multiple questions to multiple surveys.
      */
-    public function assign(Request $request)
+    public function assign(Request $request): RedirectResponse
     {
         // Validate the request data
         $validated = $request->validate([
@@ -32,16 +35,15 @@ class QuestionBulkController extends Controller
      * Delete multiple questions.
      * This will cascade delete from the pivot table as well.
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $data = $request->validate([
             'question_ids' => 'required|array',
-            'question_ids.*' => 'integer|exists:questions,id',
+            'question_ids.*' => 'required|integer|exists:questions,id'
         ]);
 
-        // Cascade will clean pivot rows
-        Question::whereIn('id', $validated['question_ids'])->delete();
-
-        return back()->with('ok', 'Selected questions deleted');
+        Question::whereIn('id', $data['question_ids'])->delete();
+        
+        return back()->with('ok', count($data['question_ids']) . ' questions deleted');
     }
 }

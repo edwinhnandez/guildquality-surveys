@@ -69,30 +69,39 @@
 
 <form action="{{ route('questions.bulk.destroy') }}" 
       method="POST" 
+      id="delete-form"
       onsubmit="return confirm('Are you sure you want to delete the selected questions?')">
     @csrf 
     @method('DELETE')
-    <input type="hidden" name="question_ids" id="del_ids">
+    <div id="hidden-inputs"></div>
     <button type="submit" 
-            class="btn btn-danger" 
-            onclick="collectIds()">
-        <i class="bi bi-trash"></i> Delete Selected
+            class="btn btn-danger"
+            onclick="return collectIds()">
+        <i class="bi bi-trash"></i> Delete Selected Questions
     </button>
 </form>
 
 <script>
 function collectIds() {
-    const ids = Array.from(document.querySelectorAll('input[name="question_ids[]"]:checked')).map(i => i.value);
-    const hidden = document.getElementById('del_ids');
-    hidden.name = 'question_ids[]';
-    hidden.value = '';
-    ids.forEach(id => {
-        const h = document.createElement('input');
-        h.type = 'hidden';
-        h.name = 'question_ids[]';
-        h.value = id;
-        hidden.parentNode.appendChild(h);
+    const checkedBoxes = document.querySelectorAll('input[name="question_ids[]"]:checked');
+    
+    if (checkedBoxes.length === 0) {
+        alert('Please select at least one question to delete');
+        return false;
+    }
+
+    const hiddenInputsDiv = document.getElementById('hidden-inputs');
+    hiddenInputsDiv.innerHTML = ''; // Clear existing inputs
+    
+    checkedBoxes.forEach(checkbox => {
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'question_ids[]';
+        hidden.value = checkbox.value;
+        hiddenInputsDiv.appendChild(hidden);
     });
+
+    return true;
 }
 
 function toggleAll(source) {
